@@ -19,4 +19,6 @@ public class ActiveSession {
     private UUID sessionId;
 
     private boolean isFull;
+
+    private int userCount;
 }
