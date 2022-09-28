@@ -3,7 +3,9 @@ server:
 
 logging:
   level:
-    web: DEBUG
+    web: INFO
+    org:
+      springframework: INFO
 
 game:
   config:

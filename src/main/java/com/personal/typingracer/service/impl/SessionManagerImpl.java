@@ -2,7 +2,7 @@ package com.personal.typingracer.service.impl;
 
 import com.personal.typingracer.entity.ActiveSession;
 import com.personal.typingracer.repository.ActiveSessionsRepository;
-import com.personal.typingracer.service.SessionService;
+import com.personal.typingracer.service.SessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SessionServiceImpl implements SessionService {
+public class SessionManagerImpl implements SessionManager {
 
     private final ActiveSessionsRepository activeSessionsRepository;
 
@@ -27,7 +27,7 @@ public class SessionServiceImpl implements SessionService {
     private static final int INITIAL_USER_COUNT = 1;
 
     @Override
-    public String addUserToSession() {
+    public String addUser() {
         Optional<ActiveSession> optionalActiveSession = activeSessionsRepository
                 .getActiveSessionByUserCountIsLessThan(maxUsersPerSession);
 

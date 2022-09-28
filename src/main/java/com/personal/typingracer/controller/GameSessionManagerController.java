@@ -2,7 +2,7 @@ package com.personal.typingracer.controller;
 
 import com.personal.typingracer.model.ActiveSessionDto;
 import com.personal.typingracer.model.response.EnterGameResponse;
-import com.personal.typingracer.service.SessionService;
+import com.personal.typingracer.service.SessionManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/v1/session")
-public class GameSessionController {
+public class GameSessionManagerController {
 
-    private final SessionService sessionService;
+    private final SessionManager sessionManager;
 
     @PostMapping("/enter")
     public ResponseEntity<EnterGameResponse> enterIntoGame(@RequestParam("requestId") String requestId) {
-        String sessionId = sessionService.addUserToSession();
+        String sessionId = sessionManager.addUser();
         EnterGameResponse enterGameResponse = new EnterGameResponse();
         enterGameResponse.setData(new ActiveSessionDto(sessionId));
         enterGameResponse.setSuccess(Boolean.TRUE);
