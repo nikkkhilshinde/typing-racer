@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/v1/session")
-public class GameSessionManagerController {
+public class SessionManagerController {
 
     private final SessionManager sessionManager;
 
