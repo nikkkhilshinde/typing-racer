@@ -1,6 +1,6 @@
 package com.personal.typingracer.service;
 
-import com.personal.typingracer.model.User;
+import com.personal.typingracer.model.NewGameDto;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface SessionManager {
 
-    User addUser();
+    NewGameDto createNewGame();
 
     void storeSession(String gameId, String sessionId);
 

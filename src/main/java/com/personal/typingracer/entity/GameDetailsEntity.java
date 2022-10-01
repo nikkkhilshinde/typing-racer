@@ -11,19 +11,17 @@ import javax.persistence.*;
  * @author nikhilshinde on 26/09/22
  */
 @Entity
-@Table(name = "active_sessions")
+@Table(name = "active_games_details")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActiveSession {
+public class GameDetailsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String sessionId;
-
-    private boolean isFull;
+    private String gameId;
 
     private int userCount;
 }

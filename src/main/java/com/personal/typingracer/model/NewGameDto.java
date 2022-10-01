@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class User {
+public class NewGameDto {
     private String gameId;
     private String userId;
 }

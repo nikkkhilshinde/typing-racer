@@ -8,6 +8,6 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class ActiveSessionDto {
-    private String sessionId;
+public class GameDetails {
+    private String gameId;
 }
