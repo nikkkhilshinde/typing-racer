@@ -2,6 +2,7 @@ package com.personal.typingracer.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -17,8 +18,8 @@ public class WebsocketController {
 
     @MessageMapping("/chat")
     @SendTo("/topic/messages")
-    public String received(Message<String> message, Principal principal) {
-        log.info("Received message {}", message.getPayload());
+    public String received(Message<String> message, Principal principal, @Header("gameId") String sessionId) {
+        log.info("Received message {}, {}", message.getPayload(), sessionId);
         return "hello";
     }
 }

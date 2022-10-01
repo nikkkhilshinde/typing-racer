@@ -1,9 +1,11 @@
 package com.personal.typingracer.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.UUID;
 
 /**
  * @author nikhilshinde on 26/09/22
@@ -11,12 +13,15 @@ import java.util.UUID;
 @Entity
 @Table(name = "active_sessions")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ActiveSession {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private UUID sessionId;
+    private String sessionId;
 
     private boolean isFull;
 
