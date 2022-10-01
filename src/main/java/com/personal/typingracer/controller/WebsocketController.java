@@ -1,9 +1,10 @@
 package com.personal.typingracer.controller;
 
-import com.personal.typingracer.service.SessionManager;
+import com.personal.typingracer.model.WebSocketIncomingMessage;
+import com.personal.typingracer.service.MessageProcessingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -18,18 +19,14 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class WebsocketController {
 
-    private final SessionManager sessionManager;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final MessageProcessingService messageProcessingService;
 
-    @MessageMapping("/game/register")
-    public void registerUserSession(Principal principal, @Header("gameId") String gameId) {
+    @MessageMapping("/game")
+    public void handleMessage(Message<WebSocketIncomingMessage> payload,
+                              Principal principal) {
 
-        boolean isSuccessfullyRegistered = sessionManager.storeSession(gameId, principal.getName());
-        if (isSuccessfullyRegistered) {
-            log.info("User '{}' registered with game '{}'", principal.getName(), gameId);
-        } else {
-            log.info("Error occurred while registering user '{}' with game '{}'", principal.getName(), gameId);
-        }
+        messageProcessingService.handleMessage(payload.getPayload(), principal);
         //simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/topic/messages", "payload");
     }
 }
