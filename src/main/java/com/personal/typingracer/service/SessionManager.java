@@ -1,5 +1,6 @@
 package com.personal.typingracer.service;
 
+import com.personal.typingracer.entity.Player;
 import com.personal.typingracer.model.NewGameDto;
 
 import java.util.List;
@@ -11,8 +12,8 @@ public interface SessionManager {
 
     NewGameDto createNewGame();
 
-    void storeSession(String gameId, String sessionId);
+    boolean storeSession(String gameId, String websocketSessionId);
 
-    List<String> getAssociatedSessionsWithGame(String gameId);
+    List<Player> getAllPlayersByGameId(String gameId);
 
 }

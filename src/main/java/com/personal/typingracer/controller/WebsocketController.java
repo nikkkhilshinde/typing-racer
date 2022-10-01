@@ -1,10 +1,11 @@
 package com.personal.typingracer.controller;
 
+import com.personal.typingracer.service.SessionManager;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
@@ -14,12 +15,21 @@ import java.security.Principal;
  */
 @Slf4j
 @Controller
+@RequiredArgsConstructor
 public class WebsocketController {
 
-    @MessageMapping("/chat")
-    @SendTo("/topic/messages")
-    public String received(Message<String> message, Principal principal, @Header("gameId") String sessionId) {
-        log.info("Received message {}, {}", message.getPayload(), sessionId);
-        return "hello";
+    private final SessionManager sessionManager;
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
+    @MessageMapping("/game/register")
+    public void registerUserSession(Principal principal, @Header("gameId") String gameId) {
+
+        boolean isSuccessfullyRegistered = sessionManager.storeSession(gameId, principal.getName());
+        if (isSuccessfullyRegistered) {
+            log.info("User '{}' registered with game '{}'", principal.getName(), gameId);
+        } else {
+            log.info("Error occurred while registering user '{}' with game '{}'", principal.getName(), gameId);
+        }
+        //simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/topic/messages", "payload");
     }
 }

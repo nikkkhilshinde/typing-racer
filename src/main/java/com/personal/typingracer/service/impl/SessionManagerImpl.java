@@ -1,7 +1,10 @@
 package com.personal.typingracer.service.impl;
 
+import com.personal.typingracer.entity.ActiveSessionDetails;
 import com.personal.typingracer.entity.GameDetailsEntity;
+import com.personal.typingracer.entity.Player;
 import com.personal.typingracer.model.NewGameDto;
+import com.personal.typingracer.repository.ActiveSessionDetailsRepository;
 import com.personal.typingracer.repository.GamesDetailsRepository;
 import com.personal.typingracer.service.SessionManager;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +26,10 @@ public class SessionManagerImpl implements SessionManager {
 
     //Maintains associated user-ids per active game
     //gameId1 -> [user1, user2, user3, user4, user5]
-    private final Map<String, List<String>> activeSessionCookieMap = new HashMap<>();
+    //private final Map<String, List<String>> activeSessionCookieMap = new HashMap<>();
 
     private final GamesDetailsRepository gamesDetailsRepository;
+    private final ActiveSessionDetailsRepository activeSessionDetailsRepository;
 
     @Value("${game.config.max-user-per-session}")
     private Integer maxUsersPerSession;
@@ -45,28 +49,47 @@ public class SessionManagerImpl implements SessionManager {
 
         String sessionId = activeSession.getGameId();
 
-        if (!activeSessionCookieMap.containsKey(sessionId)) {
-            activeSessionCookieMap.put(sessionId, new ArrayList<>());
-        }
+//        if (!activeSessionCookieMap.containsKey(sessionId)) {
+//            activeSessionCookieMap.put(sessionId, new ArrayList<>());
+//        }
 
         //Generate random userId and store it in map to verify afterwards that
         //the websocket message is coming from legitimate user
-        String userId = UUID.randomUUID().toString();
-        activeSessionCookieMap.get(sessionId).add(userId);
+//        String userId = UUID.randomUUID().toString();
+//        activeSessionCookieMap.get(sessionId).add(userId);
 
         return NewGameDto.builder()
-                .userId(userId)
+//                .userId(userId)
                 .gameId(sessionId)
                 .build();
     }
 
     @Override
-    public void storeSession(String gameId, String sessionId) {
-        activeGames.get(gameId).add(sessionId);
+    public boolean storeSession(String gameId, String username) {
+        Optional<ActiveSessionDetails> optionalActiveSessionDetails = activeSessionDetailsRepository
+                .getActiveSessionDetailsByGameId(gameId);
+
+        ActiveSessionDetails activeSessionDetails = optionalActiveSessionDetails.orElseGet(() ->
+                ActiveSessionDetails.builder().gameId(gameId).players(new ArrayList<>()).build()
+        );
+
+        activeSessionDetails.getPlayers().add(Player.builder().username(username).build());
+
+        try {
+            activeSessionDetailsRepository.saveOrUpdateActiveSession(activeSessionDetails);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     @Override
-    public List<String> getAssociatedSessionsWithGame(String gameId) {
-        return activeGames.get(gameId);
+    public List<Player> getAllPlayersByGameId(String gameId) {
+        Optional<ActiveSessionDetails> optionalActiveSessionDetails =
+                activeSessionDetailsRepository.getActiveSessionDetailsByGameId(gameId);
+
+        return optionalActiveSessionDetails.orElseGet(() -> optionalActiveSessionDetails.orElseGet(() ->
+                ActiveSessionDetails.builder().gameId(gameId).players(List.of()).build()
+        )).getPlayers();
     }
 }

@@ -1,12 +1,16 @@
 package com.personal.typingracer.entity;
 
+import lombok.Builder;
 import lombok.Getter;
+
+import java.io.Serializable;
 
 /**
  * @author nikhilshinde on 01/10/22
  */
 @Getter
-public class Player{
-    private String webSocketSessionId;
-    private String userId;
+@Builder
+public class Player implements Serializable {
+    private String username;
+//    private String userId;
 }

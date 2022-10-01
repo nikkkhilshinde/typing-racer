@@ -12,6 +12,11 @@ game:
     max-user-per-session: 5
 
 spring:
+  redis:
+    host: localhost
+    port: 6379
+  session:
+    store-type=redis: redis
   datasource:
     url: jdbc:mysql://localhost:3306/typing_racer
     username: root

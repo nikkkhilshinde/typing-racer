@@ -1,5 +1,6 @@
 package com.personal.typingracer.config;
 
+import com.personal.typingracer.entity.ActiveSessionDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -16,8 +17,8 @@ public class RedisConfiguration {
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
+    public RedisTemplate<String, ActiveSessionDetails> redisTemplate() {
+        RedisTemplate<String, ActiveSessionDetails> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory());
         return template;
     }
