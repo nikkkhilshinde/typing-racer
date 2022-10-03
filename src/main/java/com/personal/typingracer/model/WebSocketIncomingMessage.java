@@ -1,5 +1,6 @@
 package com.personal.typingracer.model;
 
+import com.personal.typingracer.model.enums.WebSocketMessageType;
 import lombok.Getter;
 
 /**
@@ -9,4 +10,5 @@ import lombok.Getter;
 public class WebSocketIncomingMessage {
     private WebSocketMessageType messageType;
     private String gameId;
+    private Object data;
 }

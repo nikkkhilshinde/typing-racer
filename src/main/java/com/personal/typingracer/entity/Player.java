@@ -12,5 +12,4 @@ import java.io.Serializable;
 @Builder
 public class Player implements Serializable {
     private String username;
-//    private String userId;
 }

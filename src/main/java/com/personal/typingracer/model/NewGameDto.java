@@ -12,5 +12,4 @@ import lombok.Setter;
 @Builder
 public class NewGameDto {
     private String gameId;
-    private String userId;
 }

@@ -37,7 +37,7 @@ public class SessionManagerImpl implements SessionManager {
     @Override
     public NewGameDto createNewGame() {
         Optional<GameDetailsEntity> optionalActiveSession = gamesDetailsRepository
-                .getActiveSessionByUserCountIsLessThan(maxUsersPerSession);
+                .findTopByUserCountIsLessThan(maxUsersPerSession);
 
         GameDetailsEntity activeSession = optionalActiveSession.orElseGet(() -> GameDetailsEntity.builder()
                 .gameId(UUID.randomUUID().toString())
@@ -49,17 +49,7 @@ public class SessionManagerImpl implements SessionManager {
 
         String sessionId = activeSession.getGameId();
 
-//        if (!activeSessionCookieMap.containsKey(sessionId)) {
-//            activeSessionCookieMap.put(sessionId, new ArrayList<>());
-//        }
-
-        //Generate random userId and store it in map to verify afterwards that
-        //the websocket message is coming from legitimate user
-//        String userId = UUID.randomUUID().toString();
-//        activeSessionCookieMap.get(sessionId).add(userId);
-
         return NewGameDto.builder()
-//                .userId(userId)
                 .gameId(sessionId)
                 .build();
     }

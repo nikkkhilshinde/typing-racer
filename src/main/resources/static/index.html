@@ -44,7 +44,7 @@
             var from = document.getElementById('from').value;
             var text = document.getElementById('text').value;
             stompClient.send("/app/game", {},
-                JSON.stringify({"messageType": 'REGISTER', "gameId": "aSasaASasa"}));
+                JSON.stringify({"messageType": 'KEY_STROKE', "gameId": "aSasaASasa"}));
         }
 
         function showMessageOutput(messageOutput) {

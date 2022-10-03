@@ -14,4 +14,6 @@ public interface GamesDetailsRepository extends CrudRepository<GameDetailsEntity
 
     Optional<GameDetailsEntity> getActiveSessionByUserCountIsLessThan(int maxCount);
 
+    Optional<GameDetailsEntity> findTopByUserCountIsLessThan(int maxCount);
+
 }

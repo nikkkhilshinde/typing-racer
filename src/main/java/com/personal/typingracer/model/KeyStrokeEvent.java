@@ -3,6 +3,6 @@ package com.personal.typingracer.model;
 /**
  * @author nikhilshinde on 01/10/22
  */
-public enum WebSocketMessageType {
-    REGISTER;
+public class KeyStrokeEvent {
+
 }

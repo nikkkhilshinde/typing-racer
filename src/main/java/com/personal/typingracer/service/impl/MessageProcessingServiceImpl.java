@@ -1,7 +1,9 @@
 package com.personal.typingracer.service.impl;
 
 import com.personal.typingracer.exception.WebSocketMessageFormatException;
+import com.personal.typingracer.model.KeyStrokeEvent;
 import com.personal.typingracer.model.WebSocketIncomingMessage;
+import com.personal.typingracer.service.KeyStrokeEventProcessor;
 import com.personal.typingracer.service.MessageProcessingService;
 import com.personal.typingracer.service.SessionManager;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.security.Principal;
 public class MessageProcessingServiceImpl implements MessageProcessingService {
 
     private final SessionManager sessionManager;
+    private final KeyStrokeEventProcessor keyStrokeEventProcessor;
 
     @Override
     public void handleMessage(WebSocketIncomingMessage message, Principal principal) {
@@ -34,6 +37,9 @@ public class MessageProcessingServiceImpl implements MessageProcessingService {
                         principal.getName(), message.getGameId(), isRegisteredSuccessfully);
                 break;
 
+            case KEY_STROKE:
+                keyStrokeEventProcessor.processKeyStroke((KeyStrokeEvent) message.getData(), principal.getName());
+                break;
             default:
                 log.info("Cannot process message due to invalid message type {} from user {}",
                         message.getMessageType(), principal.getName());

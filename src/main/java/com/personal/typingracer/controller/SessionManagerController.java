@@ -7,10 +7,7 @@ import com.personal.typingracer.service.SessionManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/v1/game")
+@CrossOrigin("*")
 public class SessionManagerController {
 
     private final SessionManager sessionManager;
@@ -29,14 +27,13 @@ public class SessionManagerController {
     private static final String USER_COOKIE_KEY = "user-id";
 
     @GetMapping
-    public ResponseEntity<EnterGameResponse> getGameId(@RequestParam("requestId") String requestId,
-                                                       HttpServletResponse response) {
+    public ResponseEntity<EnterGameResponse> getGameId(@RequestParam("requestId") String requestId) {
 
         log.info("Get game id request received with request-id {}", requestId);
 
         NewGameDto newGame = sessionManager.createNewGame();
 
-        setUserIdInCookie(newGame.getUserId(), response);
+//        setUserIdInCookie(newGame.getUserId(), response);
 
         return ResponseEntity.ok(
                 EnterGameResponse.builder()
