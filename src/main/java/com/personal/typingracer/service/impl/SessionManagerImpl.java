@@ -3,7 +3,6 @@ package com.personal.typingracer.service.impl;
 import com.personal.typingracer.entity.ActiveSessionDetails;
 import com.personal.typingracer.entity.GameDetailsEntity;
 import com.personal.typingracer.entity.Player;
-import com.personal.typingracer.model.NewGameDto;
 import com.personal.typingracer.repository.ActiveSessionDetailsRepository;
 import com.personal.typingracer.repository.GamesDetailsRepository;
 import com.personal.typingracer.service.SessionManager;
@@ -12,7 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author nikhilshinde on 28/09/22
@@ -22,12 +24,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SessionManagerImpl implements SessionManager {
 
-    private final Map<String, List<String>> activeGames = new HashMap<>();
-
-    //Maintains associated user-ids per active game
-    //gameId1 -> [user1, user2, user3, user4, user5]
-    //private final Map<String, List<String>> activeSessionCookieMap = new HashMap<>();
-
     private final GamesDetailsRepository gamesDetailsRepository;
     private final ActiveSessionDetailsRepository activeSessionDetailsRepository;
 
@@ -35,27 +31,32 @@ public class SessionManagerImpl implements SessionManager {
     private Integer maxUsersPerSession;
 
     @Override
-    public NewGameDto createNewGame() {
-        Optional<GameDetailsEntity> optionalActiveSession = gamesDetailsRepository
-                .findTopByUserCountIsLessThan(maxUsersPerSession);
+    public void createNewGame(String username) {
+        try{
+            Optional<GameDetailsEntity> optionalActiveSession = gamesDetailsRepository
+                    .findTopByUserCountIsLessThan(maxUsersPerSession);
 
-        GameDetailsEntity activeSession = optionalActiveSession.orElseGet(() -> GameDetailsEntity.builder()
-                .gameId(UUID.randomUUID().toString())
-                .build());
+            GameDetailsEntity activeSession = optionalActiveSession.orElseGet(() -> GameDetailsEntity.builder()
+                    .gameId(UUID.randomUUID().toString())
+                    .build());
 
-        activeSession.setUserCount(activeSession.getUserCount() + 1);
+            activeSession.setUserCount(activeSession.getUserCount() + 1);
 
-        gamesDetailsRepository.save(activeSession);
+            gamesDetailsRepository.save(activeSession);
 
-        String sessionId = activeSession.getGameId();
+            String gameId = activeSession.getGameId();
 
-        return NewGameDto.builder()
-                .gameId(sessionId)
-                .build();
+            storeSession(gameId, username);
+
+            log.info("User {} registered with game {}", username, gameId);
+        } catch (Exception e){
+            log.info("Error while creating session for {}", username);
+            //TODO: Send error event on websocket for user, and retry again from front-end
+        }
+
     }
 
-    @Override
-    public boolean storeSession(String gameId, String username) {
+    private void storeSession(String gameId, String username) {
         Optional<ActiveSessionDetails> optionalActiveSessionDetails = activeSessionDetailsRepository
                 .getActiveSessionDetailsByGameId(gameId);
 
@@ -65,12 +66,8 @@ public class SessionManagerImpl implements SessionManager {
 
         activeSessionDetails.getPlayers().add(Player.builder().username(username).build());
 
-        try {
-            activeSessionDetailsRepository.saveOrUpdateActiveSession(activeSessionDetails);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
+        activeSessionDetailsRepository.saveOrUpdateActiveSession(activeSessionDetails);
+
     }
 
     @Override

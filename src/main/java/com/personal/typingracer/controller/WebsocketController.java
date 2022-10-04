@@ -25,6 +25,5 @@ public class WebsocketController {
                               Principal principal) {
 
         messageProcessingService.handleMessage(payload.getPayload(), principal);
-        //simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/topic/messages", "payload");
     }
 }

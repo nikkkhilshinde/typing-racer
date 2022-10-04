@@ -3,9 +3,12 @@ package com.personal.typingracer.service.impl;
 import com.personal.typingracer.exception.WebSocketMessageFormatException;
 import com.personal.typingracer.model.KeyStrokeEvent;
 import com.personal.typingracer.model.WebSocketIncomingMessage;
+import com.personal.typingracer.model.WebSocketOutgoingMessage;
+import com.personal.typingracer.model.enums.WebSocketMessageType;
 import com.personal.typingracer.service.KeyStrokeEventProcessor;
 import com.personal.typingracer.service.MessageProcessingService;
-import com.personal.typingracer.service.SessionManager;
+import com.personal.typingracer.service.UserRegistrationService;
+import com.personal.typingracer.service.WebSocketPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,26 +23,28 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class MessageProcessingServiceImpl implements MessageProcessingService {
 
-    private final SessionManager sessionManager;
     private final KeyStrokeEventProcessor keyStrokeEventProcessor;
+    private final UserRegistrationService userRegistrationService;
+    private final WebSocketPublisher webSocketPublisher;
 
     @Override
     public void handleMessage(WebSocketIncomingMessage message, Principal principal) {
         if (!validateMessage(message)) {
             log.error("Unable to process message {} due to invalid parameters", message);
+            webSocketPublisher.publishErrorEvents(new WebSocketOutgoingMessage(WebSocketMessageType.ERROR), principal);
             return;
         }
 
         switch (message.getMessageType()) {
+
             case REGISTER:
-                boolean isRegisteredSuccessfully = registerUser(message.getGameId(), principal.getName());
-                log.info("Status: User registration '{}' with game '{}' : {}",
-                        principal.getName(), message.getGameId(), isRegisteredSuccessfully);
+                userRegistrationService.registerUser(message.getGameId(), principal.getName());
                 break;
 
             case KEY_STROKE:
                 keyStrokeEventProcessor.processKeyStroke((KeyStrokeEvent) message.getData(), principal.getName());
                 break;
+
             default:
                 log.info("Cannot process message due to invalid message type {} from user {}",
                         message.getMessageType(), principal.getName());
@@ -51,11 +56,6 @@ public class MessageProcessingServiceImpl implements MessageProcessingService {
         if (message.getGameId() != null && message.getMessageType() != null && message.getGameId().isEmpty()){
             throw new WebSocketMessageFormatException("Invalid message parameters " + message);
         }
-
         return true;
-    }
-
-    private boolean registerUser(String gameId, String username) {
-        return sessionManager.storeSession(gameId, username);
     }
 }
