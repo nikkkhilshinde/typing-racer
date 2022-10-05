@@ -1,4 +1,4 @@
-package com.personal.typingracer.model;
+package com.personal.typingracer.model.websocket;
 
 import com.personal.typingracer.model.enums.WebSocketMessageType;
 import lombok.Getter;

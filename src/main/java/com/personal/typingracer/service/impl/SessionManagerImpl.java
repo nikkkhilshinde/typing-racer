@@ -3,14 +3,20 @@ package com.personal.typingracer.service.impl;
 import com.personal.typingracer.entity.ActiveSessionDetails;
 import com.personal.typingracer.entity.GameDetailsEntity;
 import com.personal.typingracer.entity.Player;
+import com.personal.typingracer.model.Content;
+import com.personal.typingracer.model.enums.WebSocketMessageType;
+import com.personal.typingracer.model.websocket.ContentWebSocketOutgoingMessage;
 import com.personal.typingracer.repository.ActiveSessionDetailsRepository;
 import com.personal.typingracer.repository.GamesDetailsRepository;
+import com.personal.typingracer.service.ContentGenerator;
 import com.personal.typingracer.service.SessionManager;
+import com.personal.typingracer.service.WebSocketPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +32,8 @@ public class SessionManagerImpl implements SessionManager {
 
     private final GamesDetailsRepository gamesDetailsRepository;
     private final ActiveSessionDetailsRepository activeSessionDetailsRepository;
+    private final WebSocketPublisher webSocketPublisher;
+    private final ContentGenerator contentGenerator;
 
     @Value("${game.config.max-user-per-session}")
     private Integer maxUsersPerSession;
@@ -39,10 +47,10 @@ public class SessionManagerImpl implements SessionManager {
      * MySql Stores only details related to game such as GameID and Users Count.
      * Redis Stores Data for the active session of that game such as GameId and User IDs.
      *
-     * @param username : Username created by spring itself
+     * @param principal : Username created by spring itself
      */
     @Override
-    public void createNewGame(String username) {
+    public void createNewGame(Principal principal) {
         try {
             Optional<GameDetailsEntity> optionalActiveSession = gamesDetailsRepository
                     .findTopByUserCountIsLessThan(maxUsersPerSession);
@@ -57,17 +65,32 @@ public class SessionManagerImpl implements SessionManager {
 
             String gameId = activeSession.getGameId();
 
-            storeSession(gameId, username);
+            storeSession(gameId, principal);
 
-            log.info("User {} registered with game {}", username, gameId);
+            /*
+            * As soon as game fills, message with content will be dispatched to every user in that game
+            * */
+            if (activeSession.getUserCount() == maxUsersPerSession){
+                List<Player> players = getAllPlayersByGameId(gameId);
+                Content content = contentGenerator.generateContent();
+                players.forEach(player -> {
+                    webSocketPublisher.publishStatusEvents(
+                            ContentWebSocketOutgoingMessage.builder()
+                                    .content(content)
+                                    .type(WebSocketMessageType.CONTENT)
+                                    .build()
+                            , player.getUsername());
+                });
+            }
+            log.info("User {} registered with game {}", principal, gameId);
         } catch (Exception e){
-            log.info("Error while creating session for {}", username);
+            log.info("Error while creating session for {}", principal);
             //TODO: Send error event on websocket for user, and retry again from front-end
         }
 
     }
 
-    private void storeSession(String gameId, String username) {
+    private void storeSession(String gameId, Principal username) {
         Optional<ActiveSessionDetails> optionalActiveSessionDetails = activeSessionDetailsRepository
                 .getActiveSessionDetailsByGameId(gameId);
 

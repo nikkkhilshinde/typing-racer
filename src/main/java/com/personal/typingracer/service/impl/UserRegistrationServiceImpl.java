@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+
 /**
  * @author nikhilshinde on 04/10/22
  */
@@ -21,10 +23,10 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     /**
      * Method assign random user to one particular game which has not yet started
      *
-     * @param username : username
+     * @param principal : username
      * */
     @Override
-    public void registerUser(String username) {
-        sessionManager.createNewGame(username);
+    public void registerUser(Principal principal) {
+        sessionManager.createNewGame(principal);
     }
 }

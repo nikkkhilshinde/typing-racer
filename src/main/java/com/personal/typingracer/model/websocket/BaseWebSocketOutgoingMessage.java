@@ -1,14 +1,15 @@
-package com.personal.typingracer.model;
+package com.personal.typingracer.model.websocket;
 
 import com.personal.typingracer.model.enums.WebSocketMessageType;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
 /**
  * @author nikhilshinde on 04/10/22
  */
+@Getter
 @AllArgsConstructor
-@Data
-public class WebSocketOutgoingMessage {
+public class BaseWebSocketOutgoingMessage<T> {
     private WebSocketMessageType messageType;
+    private T data;
 }

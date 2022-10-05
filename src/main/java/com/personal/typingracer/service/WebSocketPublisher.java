@@ -1,6 +1,6 @@
 package com.personal.typingracer.service;
 
-import com.personal.typingracer.model.WebSocketOutgoingMessage;
+import com.personal.typingracer.model.websocket.BaseWebSocketOutgoingMessage;
 
 import java.security.Principal;
 
@@ -9,6 +9,6 @@ import java.security.Principal;
  */
 public interface WebSocketPublisher {
 
-    void publishStatusEvents(WebSocketOutgoingMessage message, Principal principal);
-    void publishErrorEvents(WebSocketOutgoingMessage message, Principal principal);
+    void publishStatusEvents(BaseWebSocketOutgoingMessage<?> message, Principal principal);
+    void publishErrorEvents(BaseWebSocketOutgoingMessage<?> message, Principal principal);
 }

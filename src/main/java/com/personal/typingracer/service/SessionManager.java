@@ -2,6 +2,7 @@ package com.personal.typingracer.service;
 
 import com.personal.typingracer.entity.Player;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
  */
 public interface SessionManager {
 
-    void createNewGame(String username);
+    void createNewGame(Principal principal);
 
     List<Player> getAllPlayersByGameId(String gameId);
 

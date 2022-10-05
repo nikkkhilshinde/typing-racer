@@ -2,13 +2,10 @@ package com.personal.typingracer.service.impl;
 
 import com.personal.typingracer.exception.WebSocketMessageFormatException;
 import com.personal.typingracer.model.KeyStrokeEvent;
-import com.personal.typingracer.model.WebSocketIncomingMessage;
-import com.personal.typingracer.model.WebSocketOutgoingMessage;
 import com.personal.typingracer.model.enums.WebSocketMessageType;
-import com.personal.typingracer.service.KeyStrokeEventProcessor;
-import com.personal.typingracer.service.MessageProcessingService;
-import com.personal.typingracer.service.UserRegistrationService;
-import com.personal.typingracer.service.WebSocketPublisher;
+import com.personal.typingracer.model.websocket.BaseWebSocketOutgoingMessage;
+import com.personal.typingracer.model.websocket.WebSocketIncomingMessage;
+import com.personal.typingracer.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +23,7 @@ public class MessageProcessingServiceImpl implements MessageProcessingService {
     private final KeyStrokeEventProcessor keyStrokeEventProcessor;
     private final UserRegistrationService userRegistrationService;
     private final WebSocketPublisher webSocketPublisher;
+    private final ContentGenerator contentGenerator;
 
     /**
      * Every incoming message from client on websocket will be handled by this method
@@ -40,15 +38,14 @@ public class MessageProcessingServiceImpl implements MessageProcessingService {
     public void handleMessage(WebSocketIncomingMessage message, Principal principal) {
         if (!validateMessage(message)) {
             log.error("Unable to process message {} due to invalid parameters", message);
-            webSocketPublisher.publishErrorEvents(new WebSocketOutgoingMessage(WebSocketMessageType.ERROR), principal);
+            webSocketPublisher.publishErrorEvents(new BaseWebSocketOutgoingMessage<>(WebSocketMessageType.ERROR, null), principal);
             return;
         }
 
         switch (message.getMessageType()) {
 
             case REGISTER:
-                userRegistrationService.registerUser(principal.getName());
-
+                userRegistrationService.registerUser(principal);
                 break;
 
             case KEY_STROKE:

@@ -1,6 +1,6 @@
 package com.personal.typingracer.controller;
 
-import com.personal.typingracer.model.WebSocketIncomingMessage;
+import com.personal.typingracer.model.websocket.WebSocketIncomingMessage;
 import com.personal.typingracer.service.MessageProcessingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

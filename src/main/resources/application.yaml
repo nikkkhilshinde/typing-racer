@@ -10,13 +10,18 @@ logging:
 game:
   config:
     max-user-per-session: 5
+    words-lower-count: 40
+
+retry:
+  maxAttempt: 2
+  maxDelay: 1000
 
 spring:
   redis:
     host: localhost
     port: 6379
   session:
-    store-type=redis: redis
+    store-type: redis
   datasource:
     url: jdbc:mysql://localhost:3306/typing_racer
     username: root
@@ -25,3 +30,9 @@ spring:
 
   devtools:
     add-properties: false
+
+third-party:
+  content:
+    base-url: https://dog-api.kinduff.com
+    api: ${third-party.content.base-url}/api/facts
+    limit: 5

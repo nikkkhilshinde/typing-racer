@@ -1,6 +1,6 @@
 package com.personal.typingracer.service;
 
-import com.personal.typingracer.model.WebSocketIncomingMessage;
+import com.personal.typingracer.model.websocket.WebSocketIncomingMessage;
 
 import java.security.Principal;
 

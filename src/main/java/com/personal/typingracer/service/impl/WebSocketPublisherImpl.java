@@ -1,6 +1,6 @@
 package com.personal.typingracer.service.impl;
 
-import com.personal.typingracer.model.WebSocketOutgoingMessage;
+import com.personal.typingracer.model.websocket.BaseWebSocketOutgoingMessage;
 import com.personal.typingracer.service.WebSocketPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,19 +29,19 @@ public class WebSocketPublisherImpl implements WebSocketPublisher {
      * @param principal : username
      */
     @Override
-    public void publishStatusEvents(WebSocketOutgoingMessage message, Principal principal) {
+    public void publishStatusEvents(BaseWebSocketOutgoingMessage message, Principal principal) {
         simpMessagingTemplate.convertAndSendToUser(principal.getName(), EVENTS_TOPIC, message);
     }
 
     /**
-     * Method will be used by all classes to publish any error event on websocket
+     * Method will be used by all classes to publish any error  event on websocket
      * Message will be sent to specific user on topic.
      *
      * @param message   : content
      * @param principal : username
      */
     @Override
-    public void publishErrorEvents(WebSocketOutgoingMessage message, Principal principal) {
+    public void publishErrorEvents(BaseWebSocketOutgoingMessage message, Principal principal) {
         simpMessagingTemplate.convertAndSendToUser(principal.getName(), ERRORS_TOPIC, message);
     }
 }
