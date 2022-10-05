@@ -5,5 +5,5 @@ package com.personal.typingracer.service;
  */
 public interface UserRegistrationService {
 
-    void registerUser(String gameId, String username);
+    void registerUser(String username);
 }

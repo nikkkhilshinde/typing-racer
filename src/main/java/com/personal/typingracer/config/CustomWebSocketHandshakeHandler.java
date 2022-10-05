@@ -16,6 +16,13 @@ import java.util.UUID;
 @Slf4j
 public class CustomWebSocketHandshakeHandler extends DefaultHandshakeHandler {
 
+    /**
+     * As currently we are allowing users to connect randomly without
+     * creating an account, so we have to assign every user a random id.
+     * for differentiating them.
+     * determineUser assigns every websocket session a random UUID and creates
+     * principal. This principal is used by spring session to differentiate users/sessions
+     */
     @Override
     protected Principal determineUser(ServerHttpRequest request,
                                       WebSocketHandler wsHandler,

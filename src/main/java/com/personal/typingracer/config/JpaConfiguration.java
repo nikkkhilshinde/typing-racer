@@ -22,6 +22,9 @@ import javax.sql.DataSource;
 @EnableJpaRepositories("com.personal.typingracer.repository")
 public class JpaConfiguration {
 
+    /**
+     * Picking up properties from application.yaml
+     */
     @Autowired
     private DataSourceProperties master;
 

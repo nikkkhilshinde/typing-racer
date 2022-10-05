@@ -27,6 +27,15 @@ public class MessageProcessingServiceImpl implements MessageProcessingService {
     private final UserRegistrationService userRegistrationService;
     private final WebSocketPublisher webSocketPublisher;
 
+    /**
+     * Every incoming message from client on websocket will be handled by this method
+     * Message will be handled according to its type. For the first time user will send
+     * message with type REGISTER and for subsequent type would be KEY_STROKES.
+     * Event will be published for every KEY_STROKE including back-space/delete.
+     *
+     * @param message   : its base class and it can be extended to create another message type
+     * @param principal : username
+     */
     @Override
     public void handleMessage(WebSocketIncomingMessage message, Principal principal) {
         if (!validateMessage(message)) {
@@ -38,7 +47,8 @@ public class MessageProcessingServiceImpl implements MessageProcessingService {
         switch (message.getMessageType()) {
 
             case REGISTER:
-                userRegistrationService.registerUser(message.getGameId(), principal.getName());
+                userRegistrationService.registerUser(principal.getName());
+
                 break;
 
             case KEY_STROKE:

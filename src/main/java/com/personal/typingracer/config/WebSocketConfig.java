@@ -16,7 +16,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Slf4j
 @AllArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
+    /**
+     * Websocket configuration. Handshake Handler used to assign random ID to every session
+     */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/game")

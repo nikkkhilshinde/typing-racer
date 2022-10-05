@@ -21,11 +21,25 @@ public class WebSocketPublisherImpl implements WebSocketPublisher {
     private final static String EVENTS_TOPIC = "/topic/events";
     private final static String ERRORS_TOPIC = "/topic/errors";
 
+    /**
+     * Method will be used by all classes to publish any normal event on websocket
+     * Message will be sent to specific user on topic.
+     *
+     * @param message   : content
+     * @param principal : username
+     */
     @Override
     public void publishStatusEvents(WebSocketOutgoingMessage message, Principal principal) {
         simpMessagingTemplate.convertAndSendToUser(principal.getName(), EVENTS_TOPIC, message);
     }
 
+    /**
+     * Method will be used by all classes to publish any error event on websocket
+     * Message will be sent to specific user on topic.
+     *
+     * @param message   : content
+     * @param principal : username
+     */
     @Override
     public void publishErrorEvents(WebSocketOutgoingMessage message, Principal principal) {
         simpMessagingTemplate.convertAndSendToUser(principal.getName(), ERRORS_TOPIC, message);
