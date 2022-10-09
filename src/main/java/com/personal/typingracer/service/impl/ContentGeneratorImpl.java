@@ -1,6 +1,7 @@
 package com.personal.typingracer.service.impl;
 
 import com.personal.typingracer.model.Content;
+import com.personal.typingracer.model.WordDetails;
 import com.personal.typingracer.model.thirdparty.ContentResponse;
 import com.personal.typingracer.service.ContentGenerator;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author nikhilshinde on 05/10/22
@@ -52,7 +54,7 @@ public class ContentGeneratorImpl implements ContentGenerator {
         });
 
         if (contentResponse == null) {
-            return new Content("");
+            return new Content(List.of());
         }
 
         List<String> words = new ArrayList<>();
@@ -63,9 +65,12 @@ public class ContentGeneratorImpl implements ContentGenerator {
             }
         }
 
-        StringBuilder content = new StringBuilder();
-        words.forEach(word -> content.append(word).append(" "));
-        return new Content(content.toString());
+        List<WordDetails> wordDetails = new ArrayList<>();
+        AtomicInteger wordId = new AtomicInteger();
+        words.forEach(word -> {
+            wordDetails.add(new WordDetails(word, wordId.getAndIncrement()));
+        });
+        return new Content(wordDetails);
     }
 
     private String generateUri() {

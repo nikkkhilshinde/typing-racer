@@ -1,15 +1,15 @@
 package com.personal.typingracer.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author nikhilshinde on 05/10/22
  */
+@Getter
+@Setter
 @AllArgsConstructor
-@Data
-public class Content{
-    private List<WordDetails> content;
+public class UserStatus {
+        private int status;
 }

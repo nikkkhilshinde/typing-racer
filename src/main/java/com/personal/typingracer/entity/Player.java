@@ -13,4 +13,6 @@ import java.security.Principal;
 @Builder
 public class Player implements Serializable {
     private Principal username;
+    private int score;
+    private int currentProgress;
 }

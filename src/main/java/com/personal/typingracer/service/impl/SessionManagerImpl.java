@@ -4,8 +4,10 @@ import com.personal.typingracer.entity.ActiveSessionDetails;
 import com.personal.typingracer.entity.GameDetailsEntity;
 import com.personal.typingracer.entity.Player;
 import com.personal.typingracer.model.Content;
+import com.personal.typingracer.model.UserStatus;
 import com.personal.typingracer.model.enums.WebSocketMessageType;
 import com.personal.typingracer.model.websocket.ContentWebSocketOutgoingMessage;
+import com.personal.typingracer.model.websocket.StatusWebSocketOutgoingMessage;
 import com.personal.typingracer.repository.ActiveSessionDetailsRepository;
 import com.personal.typingracer.repository.GamesDetailsRepository;
 import com.personal.typingracer.service.ContentGenerator;
@@ -71,23 +73,38 @@ public class SessionManagerImpl implements SessionManager {
             * As soon as game fills, message with content will be dispatched to every user in that game
             * */
             if (activeSession.getUserCount() == maxUsersPerSession){
-                List<Player> players = getAllPlayersByGameId(gameId);
-                Content content = contentGenerator.generateContent();
-                players.forEach(player -> {
-                    webSocketPublisher.publishStatusEvents(
-                            ContentWebSocketOutgoingMessage.builder()
-                                    .content(content)
-                                    .type(WebSocketMessageType.CONTENT)
-                                    .build()
-                            , player.getUsername());
-                });
+                publishContent(gameId);
+                publishInitialStatusToEveryUser(gameId);
             }
             log.info("User {} registered with game {}", principal, gameId);
         } catch (Exception e){
             log.info("Error while creating session for {}", principal);
             //TODO: Send error event on websocket for user, and retry again from front-end
         }
+    }
 
+    private void publishInitialStatusToEveryUser(String gameId){
+        List<Player> players = getAllPlayersByGameId(gameId);
+        players.forEach(player -> {
+            webSocketPublisher.publishStatusEvents(StatusWebSocketOutgoingMessage.builder()
+                    .userStatus(new UserStatus(player.getCurrentProgress()))
+                    .type(WebSocketMessageType.STATUS)
+                    .build(), player.getUsername()
+            );
+        });
+    }
+
+    private void publishContent(String gameId) {
+        List<Player> players = getAllPlayersByGameId(gameId);
+        Content content = contentGenerator.generateContent();
+        players.forEach(player -> {
+            webSocketPublisher.publishStatusEvents(
+                    ContentWebSocketOutgoingMessage.builder()
+                            .content(content)
+                            .type(WebSocketMessageType.CONTENT)
+                            .build()
+                    , player.getUsername());
+        });
     }
 
     private void storeSession(String gameId, Principal username) {
